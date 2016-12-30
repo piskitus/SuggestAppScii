@@ -85,6 +85,7 @@ angular.module('myApp').controller('registerController',
        console.log("esta es la d: "+ Key_signed_for_server);
        // initial values
        $scope.error = false;
+
        $scope.disabled = true;
 
       // call register from service
