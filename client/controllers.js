@@ -71,38 +71,46 @@ angular.module('myApp').controller('registerController',
       var n = keys.publicKey.n.toString(16);
       var d = keys.privateKey.d.toString(16);
 
-      var e_bigInt = new bigInt(keys.publicKey.e.toString(16),16);
-      var n_bigInt  = new bigInt(keys.publicKey.n.toString(16),16);
-      var d_bigInt  = new bigInt(keys.privateKey.d.toString(16),16);
+      var d_bigInt  = keys.privateKey.d;
 
 
        var publicKeyClient = d_bigInt ;
        console.log("esta es la e:"+ e_server);
 
-       var Key_signed_for_server = AuthService.Blind(publicKeyClient,e_server, n_server);
+       AuthService.Blind(publicKeyClient,e_server,n_server)
+           .then(function(data) {
+               var Key_signed_for_server = data;
 
-       console.log("esta es la d2:"+ d_bigInt );
-       console.log("esta es la d: "+ Key_signed_for_server);
-       // initial values
-       $scope.error = false;
+               console.log("esta es la d2:"+ d_bigInt );
+               console.log("esta es la key firmada por el server: "+ Key_signed_for_server);
 
-       $scope.disabled = true;
+               Key_signed_for_server_String = Key_signed_for_server.toString(16);
+               // initial values
+               $scope.error = false;
 
-      // call register from service
-      AuthService.register($scope.registerForm.username, $scope.registerForm.password, e, n, d)
-      // handle success
-          .then(function () {
-            $location.path('/login');
-            $scope.disabled = false;
-            $scope.registerForm = {};
-          })
-          // handle error
-          .catch(function () {
-            $scope.error = true;
-            $scope.errorMessage = "Something went wrong!";
-            $scope.disabled = false;
-            $scope.registerForm = {};
-          });
+               $scope.disabled = true;
+
+               // call register from service
+               AuthService.register($scope.registerForm.username, $scope.registerForm.password, e, n, d, Key_signed_for_server_String)
+               // handle success
+                   .then(function () {
+                       $location.path('/login');
+                       $scope.disabled = false;
+                       $scope.registerForm = {};
+                   })
+                   // handle error
+                   .catch(function () {
+                       $scope.error = true;
+                       $scope.errorMessage = "Something went wrong!";
+                       $scope.disabled = false;
+                       $scope.registerForm = {};
+                   });
+           })
+           .catch(function(err) {
+             // Tratar el error
+         })
+
+
 
     }
 

@@ -4,6 +4,7 @@ angular.module('myApp').factory('AuthService',
 
     // create user variable
     var user = null;
+    var keyfirmado;
 
     // return available functions for use in the controllers
     return ({
@@ -94,13 +95,13 @@ angular.module('myApp').factory('AuthService',
 
     }
 
-    function register(username, password,  e, n, d) {
+    function register(username, password,  e, n, d, Key_signed_for_server) {
 
       // create a new instance of deferred
       var deferred = $q.defer();
       // send a post request to the server
       $http.post('/user/register',
-        {username: username, password: password, e:e, n:n, d:d})
+        {username: username, password: password, e:e, n:n, d:d, Key_signed_for_server:Key_signed_for_server})
         // handle success
         .success(function (data, status) {
           if(status === 200 && data.status){
@@ -167,42 +168,19 @@ angular.module('myApp').factory('AuthService',
       this.e = e;
     }
 
-    /*function getKeysServer(){
-
-      var n_server;
-      var e_server;
-      return $http.get('/user/keys').success(function (data) {
-
-        n_server = bigInt(data.n);
-        e_server = bigInt(data.e);
-        //console.log('numero aleatorio', random);
-
-        console.log('clave del servidor n', data.n);
-
-
-
-      }).error(function (data) {
-            console.log('Error: ' + data);
-          });
-
-      return {data : data.n};
-
-
-
-    }*/
-
-
     function Blind(Kpub_Cliente,e_server,n_server) {
+
+      var defered = $q.defer();
 
       console.log('Esta es la clave publica del cliente:',Kpub_Cliente);
       console.log('eee', e_server);
       console.log('nnnn', n_server);
 
-      var bigrandom = bigInt.randBetween(0, n_server);
+      var bigrandom = makePrime(n_server);
 
-      console.log('biginteger'+bigrandom);
+      console.log('biginteger  ' +bigrandom);
 
-      Kpub_Cliente_bigInt = new bigInt (Kpub_Cliente, 16);
+      Kpub_Cliente_bigInt = Kpub_Cliente;
 
       console.log('Kpub_Cliente_bigInt', Kpub_Cliente_bigInt);
 
@@ -210,29 +188,33 @@ angular.module('myApp').factory('AuthService',
 
       console.log('clave publica cegada', result);
 
-      $http.post('http://localhost:3000/user/message/blind', {"result" : result.toString(16)}).success(function(data) {
+      $http.post('http://localhost:3000/user/message/blind', {"result" : result.toString(16)}).then(function(response) {
 
-        var keyCegadoFirmado = bigInt(data.signed16);
-        console.log(keyCegadoFirmado);
+        var keyCegadoFirmado = new bigInt (response.data.signed16,16);
 
-        var keyfirmado = (keyCegadoFirmado.multiply(bigrandom.modInv(n_server))).mod(n_server);
+        console.log('clave publica cegada y firmada'+keyCegadoFirmado);
 
-        console.log('MSG EN HEX: '+keyfirmado.toString(16));
+        console.log('n_server:' +n_server + 'bigrandom:  '+ bigrandom);
+
+        var modinverso = bigrandom.modInv(n_server);
+
+        keyfirmado = (keyCegadoFirmado.multiply(modinverso)).mod(n_server);
+
+        console.log('MSG EN HEX: '+keyfirmado);
 
         var verify = keyfirmado.modPow(e_server,n_server);
 
-        var verifytohex = verify.toString(16);
+        var verifytohex = verify;
 
-        var verifystring =hex2a(verifytohex);
-        console.log("mi key" +verifystring);
+        console.log("mi key" +verifytohex);
 
-        return keyfirmado;
+        defered.resolve(keyfirmado);
 
-      })
-          .error(function(data) {
+      }).catch(function(data) {
             console.log('Error: ' + data);
           });
 
+      return defered.promise;
     }
 
     function blindmessage (Kpub_Cliente,random,e,n){
@@ -245,6 +227,22 @@ angular.module('myApp').factory('AuthService',
       for (var i = 0; i < hex.length; i += 2)
         str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
       return str;
+    }
+
+    function makePrime(n_server) {
+
+      var prime;
+
+      var num_prime = new bigInt.randBetween(0, n_server);
+      prime = num_prime.isPrime();
+      while(prime == false)
+      {
+        num_prime = new bigInt.randBetween(0, n_server);
+        prime = num_prime.isPrime();
+      }
+
+      return num_prime;
+
     }
 
 

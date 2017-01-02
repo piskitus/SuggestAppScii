@@ -9,7 +9,8 @@ var User = new Schema({
   password: String,
   e:        String,
   d:        String,
-  n:        String
+  n:        String,
+  Key_signed_for_server: String
 });
 
 User.plugin(passportLocalMongoose);

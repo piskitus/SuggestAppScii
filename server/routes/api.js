@@ -22,7 +22,7 @@ router.get('/keys', function (req, res, next) {
 });
 
 router.post('/register', function(req, res) {
-  User.register(new User({ username: req.body.username, e:req.body.e, n: req.body.n, d: req.body.d}),
+  User.register(new User({ username: req.body.username, e:req.body.e, n: req.body.n, d: req.body.d, Key_signed_for_server: req.body.Key_signed_for_server}),
     req.body.password, function(err, account) {
 
     if (err) {
@@ -83,18 +83,18 @@ router.post('/message/blind', function (req, res, next) {
   var d = d_Server;
   var n = n_Server;
 
-  console.log('de del server: '+ d_Server+ "n:  "+ n_Server);
-  console.log('req', req.body.result);
+  console.log('d del server: '+ d_Server+ "  n:  "+ n_Server);
+  console.log('req: ', req.body.result);
 
   var message = req.body.result;
 
   console.log('Clave publica cegada', message);
 
-  var mensaje = bignum (message, 16);
+  var mensajebignum = bignum (message, 16);
 
-  console.log('Clave publica en bignum', mensaje);
+  console.log('Clave publica en bignum', mensajebignum);
 
-  var mesfirma = mensaje.powm(d, n);
+  var mesfirma = mensajebignum.powm(d, n);
 
   console.log('mensaje firmado', mesfirma);
 
