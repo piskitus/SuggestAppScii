@@ -94,7 +94,21 @@ angular.module('myApp').controller('registerController',
                AuthService.register($scope.registerForm.username, $scope.registerForm.password, e, n, d, Key_signed_for_server_String)
                // handle success
                    .then(function () {
-                       $location.path('/login');
+                       // SI EL REGISTRO SE EFECTUA CORRECTAMENTE, HAGO EL LOGIN DIRECTAMENTE
+                       AuthService.login($scope.registerForm.username, $scope.registerForm.password)
+                       // handle success
+                           .then(function () {
+                               $location.path('/home');
+                               $scope.disabled = false;
+                               $scope.loginForm = {};
+                           })
+                           // handle error
+                           .catch(function () {
+                               $scope.error = true;
+                               $scope.errorMessage = "Invalid username and/or password";
+                               $scope.disabled = false;
+                               $scope.loginForm = {};
+                           });
                        $scope.disabled = false;
                        $scope.registerForm = {};
                    })
