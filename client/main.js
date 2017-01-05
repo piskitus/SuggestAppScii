@@ -24,6 +24,11 @@ myApp.config(function ($routeProvider) {
       controller: 'registerController',
       access: {restricted: false}
     })
+      .when('/users', {
+          templateUrl: 'partials/users.html',
+          controller: 'usersController',
+          access: {restricted: true}
+      })
       .when('/restringido', {
           template: '<h1>A Esta página solo se puede acceder logueado!</h1>',
           access: {restricted: true}

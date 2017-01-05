@@ -1,0 +1,18 @@
+<div class="jumbotron text-center" ng-controller="usersController">
+    <h2>USERS</h2>
+    <div>
+        <table class="table table-striped">
+            <tr class="info">
+                <td>User</td>
+                <td>ID</td>
+                <td>Delete</td>
+            </tr>
+            <tr ng-repeat="user in users">
+                <td>{{user.username}}</td>
+                <td>{{user._id}}</td>
+                <td><button class="btn btn-danger btn-sm" ng-click="deleteUser(user._id)">x</button></td>
+
+            </tr>
+        </table>
+    </div>
+</div>
