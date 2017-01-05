@@ -21,6 +21,43 @@ router.get('/keys', function (req, res, next) {
 
 });
 
+
+//################################################################
+//####    GET de todos los usuarios de la base de datos
+//################################################################
+
+router.get('/users', function (req, res) {
+  User.find(
+      function(err,users){
+        if(err){
+          res.send(err);
+        }
+        res.json(users);
+      }
+  );
+});
+
+//################################################################
+//####    DELETE de un usuario de la base de datos
+//################################################################
+
+router.delete('/users/:user_id', function (req, res) {
+  User.remove({_id: req.params.user_id}, function (err, user) {
+    if (err) {
+      res.send(err);
+    }
+    User.find(function (err, users) {
+      if (err) {
+        res.send(err)
+      }
+      res.json(users)
+    });
+  });
+});
+
+
+
+
 router.post('/register', function(req, res) {
   User.register(new User({ username: req.body.username, e:req.body.e, n: req.body.n, d: req.body.d, Key_signed_for_server: req.body.Key_signed_for_server}),
     req.body.password, function(err, account) {
