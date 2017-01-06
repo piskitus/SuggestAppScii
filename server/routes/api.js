@@ -4,6 +4,7 @@ var passport = require('passport');
 var bignum = require('bignum');
 
 var User = require('../models/user.js');
+var Suggest = require('../models/suggest.js');
 var rsa_bignum = require('./rsa_bignum');
 
 var d_Server = 75539539486598939391725124021581790869928610987864855829286443664541239505145;
@@ -138,5 +139,27 @@ router.post('/message/blind', function (req, res, next) {
   res.status(200).send({signed:mesfirma.toString(),signed16:mesfirma.toString(16)});
 });
 
+//################################################################
+//####   Crear sugerencias
+//################################################################
 
+router.post('/suggest', function(req, res, next) {
+  var suggest= new Suggest(
+      {
+        suggest: req.body.suggest
+      }
+  );
+
+  suggest.save(function (err, suggest) {
+    if (err) return console.error(err);
+    else{
+      return res.status(200).json({
+        status: 'Suggest registred succesful!'
+      });
+    }
+
+  });
+
+
+});
 module.exports = router;

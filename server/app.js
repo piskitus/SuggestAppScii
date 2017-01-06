@@ -15,6 +15,7 @@ mongoose.connect('mongodb://localhost/suggest');
 
 // user schema/model
 var User = require('./models/user.js');
+var Suggest = require('./models/suggest.js');
 
 // create instance of express
 var app = express();

@@ -37,6 +37,11 @@ myApp.config(function ($routeProvider) {
           template: '<h1>A esta página se puede acceder aunque no estés logueado</h1>',
           access: {restricted: false}
       })
+      .when('/suggest', {
+          templateUrl: 'partials/suggest.html',
+          controller: 'suggestController',
+          access: {restricted: true}
+      })
     .otherwise({
       redirectTo: '/'
     });

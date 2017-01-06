@@ -16,7 +16,8 @@ angular.module('myApp').factory('AuthService',
       generateKeys :generateKeys,
       privateKey:privateKey,
       publicKey:publicKey,
-      Blind :Blind
+      Blind :Blind,
+      DoSuggest:DoSuggest
     });
 
     function isLoggedIn() {
@@ -242,6 +243,30 @@ angular.module('myApp').factory('AuthService',
       }
 
       return num_prime;
+
+    }
+
+    function DoSuggest(suggest) {
+
+      // create a new instance of deferred
+      var deferred = $q.defer();
+      // send a post request to the server
+      $http.post('http://localhost:3000/user/suggest', {"suggest":suggest})
+           // handle success
+          .success(function (data, status) {
+            if(status === 200 && data.status){
+              deferred.resolve();
+            } else {
+              deferred.reject();
+            }
+          })
+          // handle error
+          .error(function (data) {
+            deferred.reject();
+          });
+
+      // return promise object
+      return deferred.promise;
 
     }
 

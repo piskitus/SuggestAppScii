@@ -177,3 +177,30 @@ angular.module('myApp').controller('usersController',
 
 
 }]);
+
+angular.module('myApp').controller('suggestController',
+    ['$scope', '$location', 'AuthService',
+        function ($scope, $location, AuthService) {
+            // handle success
+            $scope.suggest = function () {
+
+                AuthService.DoSuggest($scope.suggestForm.message)
+                // handle success
+                    .then(function () {
+                        $scope.succes = true;
+                        $scope.succesMessage = "Sugerencia registrada correctamente";
+                        $scope.disabled = false;
+                        $scope.suggestForm = {};
+                    })
+                    // handle error
+                    .catch(function () {
+                        $scope.error = true;
+                        $scope.errorMessage = "Hola que tal esto esta mal >.<";
+                        $scope.disabled = false;
+                        $scope.suggestForm = {};
+                    });
+                $scope.disabled = false;
+                $scope.suggestForm = {};
+
+            }
+        }]);
