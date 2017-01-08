@@ -11,6 +11,7 @@ var d_Server = 75539539486598939391725124021581790869928610987864855829286443664
 var n_Server = 86862385502565790976514886707414917855848516922400707585729953267658893907197;
 var e_Server = 65537;
 
+
 router.get('/keys', function (req, res, next) {
 
   res.json({
@@ -21,6 +22,7 @@ router.get('/keys', function (req, res, next) {
   });
 
 });
+
 
 
 //################################################################
@@ -36,6 +38,28 @@ router.get('/users', function (req, res) {
         res.json(users);
       }
   );
+});
+
+//################################################################
+//####    GET Boss e and n and d
+//################################################################
+
+router.get('/userdetail/:username', function(req, res){
+
+
+  var user = new User(
+      {
+        username: req.params.username,
+        password: req.params.password,
+        email: req.params.email,
+        city: req.params.city
+      }
+  );
+
+  User.find({username:user.username}, function(err, users){
+    res.json(users);
+  });
+
 });
 
 //################################################################
@@ -146,7 +170,9 @@ router.post('/message/blind', function (req, res, next) {
 router.post('/suggest', function(req, res, next) {
   var suggest= new Suggest(
       {
-        suggest: req.body.suggest
+        suggest: req.body.suggest,
+        Key_signed_for_server : req.body.Key_signed_for_server,
+        HashSigned: req.body.HashSigned
       }
   );
 

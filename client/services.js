@@ -17,7 +17,11 @@ angular.module('myApp').factory('AuthService',
       privateKey:privateKey,
       publicKey:publicKey,
       Blind :Blind,
-      DoSuggest:DoSuggest
+      DoSuggest:DoSuggest,
+      encrypt:encrypt,
+      stringToHex:stringToHex,
+      hex2a:hex2a,
+      GetInfoOneUser:GetInfoOneUser
     });
 
     function isLoggedIn() {
@@ -246,12 +250,12 @@ angular.module('myApp').factory('AuthService',
 
     }
 
-    function DoSuggest(suggest) {
+    function DoSuggest(suggest, Key_signed_for_server, HashSigned) {
 
       // create a new instance of deferred
       var deferred = $q.defer();
       // send a post request to the server
-      $http.post('http://localhost:3000/user/suggest', {"suggest":suggest})
+      $http.post('http://localhost:3000/user/suggest', {"suggest":suggest, "Key_signed_for_server": Key_signed_for_server,"HashSigned":HashSigned })
            // handle success
           .success(function (data, status) {
             if(status === 200 && data.status){
@@ -270,5 +274,59 @@ angular.module('myApp').factory('AuthService',
 
     }
 
+    function encrypt(message,e,n) {
 
-}]);
+      var mhexa = stringToHex(message);
+
+      var m = bigInt (mhexa , 16);
+
+      return m.modPow(e, n);
+
+
+    }
+
+    function stringToHex (tmp) {
+      var str = '',
+          i = 0,
+          tmp_len = tmp.length,
+          c;
+
+      for (; i < tmp_len; i += 1) {
+        c = tmp.charCodeAt(i);
+        str += d2h(c);
+      }
+      return str;
+    }
+
+    function d2h(d) {
+      return d.toString(16);
+    }
+
+    function hex2a(hexx) {
+      var hex = hexx.toString();//force conversion
+      var str = '';
+      for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+
+      return str;
+    }
+
+    function GetInfoOneUser(name) {
+
+      var deferred = $q.defer();
+
+      $http.get('user/userdetail/' + name).then(function (data) {
+
+       deferred.resolve(data);
+
+      })
+          .catch(function (data) {
+            console.log('Error: ' + data);
+          });
+
+      return deferred.promise;
+
+  }
+
+
+  }]);

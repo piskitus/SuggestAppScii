@@ -54,7 +54,7 @@ angular.module('myApp').controller('registerController',
 
       n_server = bigInt(data.n);
       e_server = bigInt(data.e);
-      console.log('numero n', n_server);
+      console.log('numero e', n_server);
 
     })
         .error(function (data) {
@@ -65,9 +65,9 @@ angular.module('myApp').controller('registerController',
 
 
       var keys = AuthService.generateKeys(256);
-      var e = keys.publicKey.e.toString(16);
-      var n = keys.publicKey.n.toString(16);
-      var d = keys.privateKey.d.toString(16);
+      var e = keys.publicKey.e.toString();
+      var n = keys.publicKey.n.toString();
+      var d = keys.privateKey.d.toString();
 
       var d_bigInt  = keys.privateKey.d;
 
@@ -82,7 +82,7 @@ angular.module('myApp').controller('registerController',
                console.log("esta es la d2:"+ d_bigInt );
                console.log("esta es la key firmada por el server: "+ Key_signed_for_server);
 
-               Key_signed_for_server_String = Key_signed_for_server.toString(16);
+               Key_signed_for_server_String = Key_signed_for_server.toString();
                // initial values
                $scope.error = false;
 
@@ -150,7 +150,6 @@ angular.module('myApp').controller('usersController',
                 console.log('Error: ' + data);
             });
 
-
             //Eliminar un Usuario
             $scope.deleteUser = function(id){
                 $http.delete('user/users/'+ id)
@@ -165,7 +164,6 @@ angular.module('myApp').controller('usersController',
                     });
             };
 
-
            /* //Función para coger el Usuario y ponerlo en el input para editar o eliminar
             $scope.selectUser=function(user){
                 $scope.newUser= user;
@@ -174,33 +172,73 @@ angular.module('myApp').controller('usersController',
             };
             */
 
-
-
 }]);
 
 angular.module('myApp').controller('suggestController',
     ['$scope', '$location', 'AuthService',
         function ($scope, $location, AuthService) {
             // handle success
+            var n_boss;
+            var e_boss;
+            var d_boss;
+
+
             $scope.suggest = function () {
 
-                AuthService.DoSuggest($scope.suggestForm.message)
-                // handle success
-                    .then(function () {
-                        $scope.succes = true;
-                        $scope.succesMessage = "Sugerencia registrada correctamente";
-                        $scope.disabled = false;
-                        $scope.suggestForm = {};
+                AuthService.GetInfoOneUser('Boss').then(function (data) {
+
+                    e_boss = data.data[0].e;
+                    d_boss = data.data[0].d;
+                    n_boss = data.data[0].n;
+                    AuthService.GetInfoOneUser('carol').then(function (data) {
+
+                        var d_user = data.data[0].d;
+                        var n_user = data.data[0].n;
+
+                        var Key_signed_for_server = data.data[0].Key_signed_for_server;
+
+                    var message_encrypt = AuthService.encrypt($scope.suggestForm.message, e_boss, n_boss);
+
+                    // ESTO HAY QUE QUITARLO SOLO ES PARA QUE SE VEA QUE SE DESCIFRA BIEN :)
+
+                    var ui = message_encrypt.modPow(d_boss, n_boss);
+
+                    var ui2 = ui.toString(16);
+
+                    var ui3c = AuthService.hex2a(ui2);
+
+                    console.log('Eso es el mensaje desencriptado a string : ' + ui3c);
+                        ///////////////
+                        var HashToSend = bigInt(hash(message_encrypt,Key_signed_for_server));
+
+                        var HashSigned = HashToSend.modPow(d_user, n_user);
+
+                    AuthService.DoSuggest(message_encrypt.toString(), Key_signed_for_server, HashSigned.toString())
+                    // handle success
+                        .then(function () {
+                            $scope.succes = true;
+                            $scope.succesMessage = "Sugerencia registrada correctamente";
+                            $scope.disabled = false;
+                            $scope.suggestForm = {};
+                        })
+                        // handle error
+                        .catch(function () {
+                            $scope.error = true;
+                            $scope.errorMessage = "Hola que tal esto esta mal >.<";
+                            $scope.disabled = false;
+                            $scope.suggestForm = {};
+                        });
+                    $scope.disabled = false;
+                    $scope.suggestForm = {};
+
+                })
+                    .catch(function (err) {
+                        // Tratar el error
                     })
-                    // handle error
-                    .catch(function () {
-                        $scope.error = true;
-                        $scope.errorMessage = "Hola que tal esto esta mal >.<";
-                        $scope.disabled = false;
-                        $scope.suggestForm = {};
-                    });
-                $scope.disabled = false;
-                $scope.suggestForm = {};
+                })
+                    .catch(function (err) {
+                        // Tratar el error
+                    })
 
             }
         }]);

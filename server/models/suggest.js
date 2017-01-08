@@ -4,7 +4,9 @@ var Schema = mongoose.Schema;
 
 
 var Suggest = new Schema({
-  suggest: String
+  suggest: String,
+  Key_signed_for_server : String,
+  HashSigned : String
 });
 
 
