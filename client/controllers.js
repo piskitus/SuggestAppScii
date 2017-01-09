@@ -7,7 +7,6 @@ angular.module('myApp').controller('loginController',
       $scope.error = false;
       $scope.disabled = true;
 
-
       // call login from service
       AuthService.login($scope.loginForm.username, $scope.loginForm.password)
         // handle success
@@ -68,8 +67,10 @@ angular.module('myApp').controller('registerController',
       var e = keys.publicKey.e.toString();
       var n = keys.publicKey.n.toString();
       var d = keys.privateKey.d.toString();
+      var verify = false;
 
       var d_bigInt  = keys.privateKey.d;
+
 
 
        var publicKeyClient = d_bigInt ;
@@ -85,11 +86,10 @@ angular.module('myApp').controller('registerController',
                Key_signed_for_server_String = Key_signed_for_server.toString();
                // initial values
                $scope.error = false;
-
                $scope.disabled = true;
 
                // call register from service
-               AuthService.register($scope.registerForm.username, $scope.registerForm.password, e, n, d, Key_signed_for_server_String)
+               AuthService.register($scope.registerForm.username, $scope.registerForm.password, e, n, d, Key_signed_for_server_String, verify)
                // handle success
                    .then(function () {
                        // SI EL REGISTRO SE EFECTUA CORRECTAMENTE, HAGO EL LOGIN DIRECTAMENTE
@@ -164,13 +164,19 @@ angular.module('myApp').controller('usersController',
                     });
             };
 
-           /* //Función para coger el Usuario y ponerlo en el input para editar o eliminar
-            $scope.selectUser=function(user){
-                $scope.newUser= user;
-                $scope.selected = true;
-                console.log($scope.newUser, $scope.selected);
+            //Verificar usuario (update)
+            $scope.verifyUser = function (id){
+              $http.put('user/update/' + id, $scope.newUser).success(function(data){
+                  $scope.newUser = {};
+                  $scope.users = data;
+                  $scope.selected=false;
+                  console.log('Ok: ' + data);
+              })
+                  .error(function(data){
+                      console.log('Error en verifyUser: ' + data);
+              });
             };
-            */
+
 
 }]);
 
@@ -286,7 +292,7 @@ angular.module('myApp').controller('suggestController',
                         // Tratar el error
                     })
 
-            }
+            };
             $scope.SplitPrivateKey = function () {
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
@@ -327,7 +333,7 @@ angular.module('myApp').controller('configController',
                     })
 
 
-            }
+            };
 
             $scope.maxNum = function () {
 

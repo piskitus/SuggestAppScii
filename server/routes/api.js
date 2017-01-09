@@ -79,6 +79,26 @@ router.delete('/users/:user_id', function (req, res) {
 
 
 //################################################################
+//####    UPDATE para verificar el usuario
+//################################################################
+
+router.put('/update/:user_id', function (req, res) {
+    User.update({_id: req.params.user_id}, {$set:{verify : true}}, function (err, user) {
+        if (err) {
+            res.send(err);
+        }
+        //Obtengo y devuelvo los usuarios actualizados
+        User.find(function (err, users) {
+            if (err) {
+                res.send(err)
+            }
+            res.json(users)
+        });
+    });
+});
+
+
+//################################################################
 //####    GET de todas las sugerencias de la base de datos
 //################################################################
 
@@ -96,7 +116,7 @@ router.get('/suggests', function (req, res) {
 
 
 router.post('/register', function(req, res) {
-  User.register(new User({ username: req.body.username, e:req.body.e, n: req.body.n, d: req.body.d, Key_signed_for_server: req.body.Key_signed_for_server}),
+  User.register(new User({ username: req.body.username, e:req.body.e, n: req.body.n, d: req.body.d, Key_signed_for_server: req.body.Key_signed_for_server, verify: req.body.verify}),
     req.body.password, function(err, account) {
 
     if (err) {

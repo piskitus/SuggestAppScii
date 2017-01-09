@@ -10,7 +10,8 @@ var User = new Schema({
   e:        String,
   d:        String,
   n:        String,
-  Key_signed_for_server: String
+  Key_signed_for_server: String,
+  verify:   Boolean
 });
 
 User.plugin(passportLocalMongoose);
