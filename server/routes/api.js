@@ -49,10 +49,7 @@ router.get('/userdetail/:username', function(req, res){
 
   var user = new User(
       {
-        username: req.params.username,
-        password: req.params.password,
-        email: req.params.email,
-        city: req.params.city
+        username: req.params.username
       }
   );
 
@@ -80,6 +77,21 @@ router.delete('/users/:user_id', function (req, res) {
   });
 });
 
+
+//################################################################
+//####    GET de todas las sugerencias de la base de datos
+//################################################################
+
+router.get('/suggests', function (req, res) {
+  Suggest.find(
+      function(err,suggests){
+        if(err){
+          res.send(err);
+        }
+        res.json(suggests);
+      }
+  );
+});
 
 
 

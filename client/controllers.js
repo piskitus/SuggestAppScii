@@ -174,6 +174,52 @@ angular.module('myApp').controller('usersController',
 
 }]);
 
+//###############################################
+//####      Controller del Meeting
+//###############################################
+
+angular.module('myApp').controller('meetingController',
+    ['$scope', '$http',
+        function ($scope, $http) {
+
+            $scope.newUser = {};
+            $scope.users = {};
+            $scope.selected = false;
+
+
+            //Pido a la API todos los suggests
+            $http.get('user/users').success(function(data){
+                $scope.users = data;
+                console.log(data);
+            })
+                .error(function(data){
+                    console.log('Error: ' + data);
+                });
+
+            //Eliminar un Usuario
+            $scope.deleteUser = function(id){
+                $http.delete('user/users/'+ id)
+                    .success(function(data){
+                        $scope.newUser={};
+                        $scope.users = data;
+                        $scope.selected=false;
+                        console.log(data);
+                    })
+                    .error(function(data){
+                        console.log('Error: ' + data);
+                    });
+            };
+
+            /* //Función para coger el Usuario y ponerlo en el input para editar o eliminar
+             $scope.selectUser=function(user){
+             $scope.newUser= user;
+             $scope.selected = true;
+             console.log($scope.newUser, $scope.selected);
+             };
+             */
+
+        }]);
+
 angular.module('myApp').controller('suggestController',
     ['$scope', '$location', 'AuthService',
         function ($scope, $location, AuthService) {

@@ -1,18 +1,39 @@
 <div class="jumbotron text-center">
     <h1>Meeting Room</h1>
-
-    <form class="form-horizontal" ng-submit="suggest()">
+    <!--<div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>-->
+    <form class="form-horizontal" ng-submit="success()">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="suggest">Sugerencia:</label>
-            <div class="col-sm-10">
-                <textarea rows="10" cols="50" class="form-control" id="suggest" ng-model="suggestForm.message"></textarea>
+            <label class="control-label col-sm-2" for="clave">Añade claves (1a1):</label>
+            <div class="col-sm-8">
+                <input type="number" class="form-control" id="clave" placeholder="Number" ng-model="configForm.clave" required>
             </div>
+            <div class="col-sm-1">
+                <button type="success" class="btn btn-success">Add</button>
+            </div>
+
         </div>
         <div class="form-group">
             <div>
-                <button type="submit" class="btn btn-success">Crear</button>
+                <button type="success" class="btn btn-warning">Ver Sugerencias</button>
             </div>
-
         </div>
+<br>
+        <div>
+            <table class="table table-striped">
+                <tr class="info">
+                    <td>User</td>
+                    <td>ID</td>
+                    <td>Delete</td>
+                </tr>
+                <tr ng-repeat="user in users">
+                    <td>{{user.username}}</td>
+                    <td>{{user._id}}</td>
+                    <td>{{user.d}}</td>
+                    <td><button class="btn btn-danger btn-sm" ng-click="deleteUser(user._id)">x</button></td>
+
+                </tr>
+            </table>
+        </div>
+
     </form>
 </div>
