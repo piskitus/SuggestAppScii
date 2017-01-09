@@ -329,4 +329,21 @@ angular.module('myApp').controller('configController',
 
             }
 
+            $scope.maxNum = function () {
+
+                if($scope.configForm.nClave<$scope.configForm.nMin){
+                    $scope.error2 = true;
+                    $scope.errorMessage2 = "El mínimo de claves tiene que ser menor que el número de claves "
+                    $scope.disabled = false;
+                }
+                else{
+                    $scope.SplitPrivateKey();
+                    $scope.success = true;
+                    $scope.successMessage = "Se han creado las claves correctamente";
+                    $scope.disabled = false;
+                }
+
+
+            }
+
         }]);
