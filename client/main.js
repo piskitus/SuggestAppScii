@@ -8,7 +8,7 @@ myApp.config(function ($routeProvider) {
     })
       .when('/home', {
         templateUrl: 'partials/home.html',
-        access: {restricted: true}
+        access: {restricted: false}
       })
     .when('/login', {
       templateUrl: 'partials/login.html',
@@ -29,17 +29,19 @@ myApp.config(function ($routeProvider) {
           controller: 'usersController',
           access: {restricted: true}
       })
-      .when('/restringido', {
-          template: '<h1>A Esta página solo se puede acceder logueado!</h1>',
-          access: {restricted: true}
-      })
-      .when('/norestringido', {
-          template: '<h1>A esta página se puede acceder aunque no estés logueado</h1>',
-          access: {restricted: false}
-      })
       .when('/suggest', {
           templateUrl: 'partials/suggest.html',
           controller: 'suggestController',
+          access: {restricted: true}
+      })
+      .when('/config', {
+          templateUrl: 'partials/config.html',
+          controller: 'configController',
+          access: {restricted: true}
+      })
+      .when('/meeting', {
+          templateUrl: 'partials/meeting.html',
+          controller: 'meetingController',
           access: {restricted: true}
       })
     .otherwise({
