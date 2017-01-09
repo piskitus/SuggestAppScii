@@ -10,6 +10,7 @@
     "angular": "1.4.7",
     "angular-route": "1.4.7",
     "big-integer": "",
-    "hash-string": ""
+    "hash-string": "",
+    "secrets.js-grempe":""
   }
 }
