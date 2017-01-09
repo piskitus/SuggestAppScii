@@ -287,4 +287,46 @@ angular.module('myApp').controller('suggestController',
                     })
 
             }
+            $scope.SplitPrivateKey = function () {
+
+                AuthService.GetInfoOneUser('Boss').then(function (data) {
+
+                var secretKey =data.data[0].d.toString(16);
+
+                console.log('ESTA ES EN HEXA: '+ secretKey);
+
+            })
+            .catch(function (err) {
+                // Tratar el error
+            })
+
+
+            }
+
+        }]);
+
+angular.module('myApp').controller('configController',
+    ['$scope', '$location', 'AuthService',
+        function ($scope, $location, AuthService) {
+            // handle success
+
+            $scope.SplitPrivateKey = function () {
+
+                AuthService.GetInfoOneUser('Boss').then(function (data) {
+
+                    var secretKey =data.data[0].d;
+
+                    var sharedSecret = secrets.share(secretKey, $scope.configForm.nClave, $scope.configForm.nMin);
+
+                    $scope.SplitsharedSecret =  sharedSecret
+
+
+                })
+                    .catch(function (err) {
+                        // Tratar el error
+                    })
+
+
+            }
+
         }]);

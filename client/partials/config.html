@@ -1,7 +1,7 @@
 <div class="jumbotron text-center">
     <h1>Generador de claves</h1>
-    <!--<div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>-->
-    <form class="form-horizontal" ng-submit="config()">
+    <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
+    <form class="form-horizontal" ng-submit="suggest()">
         <div class="form-group">
             <label class="control-label col-sm-6" for="nClave">Número de claves (num Jefes):</label>
             <div class="col-sm-2">
@@ -16,17 +16,17 @@
         </div>
         <div class="form-group">
             <div>
-                <button type="config" class="btn btn-success">Generar Claves</button>
+                <button type="config" ng-click="SplitPrivateKey()" class="btn btn-success">Generar Claves</button>
             </div>
         </div>
 <br>
         <div>
             <table class="table table-striped">
                 <tr class="info">
-                    <td>Claves</td>
+                    <td>Claves </td>
                 </tr>
-                <tr>
-                    <td>asdf</td>
+                <tr ng-repeat="key in SplitsharedSecret">
+                    <td width="1px">{{key}}</td>
                 </tr>
             </table>
         </div>
