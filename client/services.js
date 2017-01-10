@@ -1,9 +1,10 @@
 angular.module('myApp').factory('AuthService',
-  ['$q', '$timeout', '$http',
-  function ($q, $timeout, $http) {
+  ['$q', '$timeout', '$http','$cookies',
+  function ($q, $timeout, $http,$cookies) {
 
     // create user variable
-    var user = null;
+    var user = false;
+    var usuario = {username:""};
     var keyfirmado;
 
     // return available functions for use in the controllers
@@ -21,7 +22,10 @@ angular.module('myApp').factory('AuthService',
       encrypt:encrypt,
       stringToHex:stringToHex,
       hex2a:hex2a,
-      GetInfoOneUser:GetInfoOneUser
+      GetInfoOneUser:GetInfoOneUser,
+      isLoggedInCookies:isLoggedInCookies,
+      getUserInfo:getUserInfo,
+      getUserRole:getUserRole
     });
 
     function isLoggedIn() {
@@ -32,6 +36,26 @@ angular.module('myApp').factory('AuthService',
       }
     }
 
+    function isLoggedInCookies()
+    {
+      return $cookies.get('logged');
+
+    }
+
+    function getUserInfo() {
+      return $cookies.getObject('user').username;
+    }
+
+    function getUserRole() {
+      if(typeof $cookies.get('role') !== "undefined") {
+        return $cookies.get('role');
+
+
+      }
+
+      return false;
+
+    }
     function getUserStatus() {
       return $http.get('/user/status')
       // handle success
@@ -60,6 +84,10 @@ angular.module('myApp').factory('AuthService',
         .success(function (data, status) {
           if(status === 200 && data.status){
             user = true;
+            $cookies.put('logged', true);
+            $cookies.putObject('user', {username:username});
+            console.log('LLEGA A QUI'+data.user.role);
+            $cookies.put('role', data.user.role);
             deferred.resolve();
           } else {
             user = false;
@@ -87,6 +115,9 @@ angular.module('myApp').factory('AuthService',
         // handle success
         .success(function (data) {
           user = false;
+          $cookies.remove('logged');
+          $cookies.remove('user');
+          $cookies.remove('role');
           deferred.resolve();
         })
         // handle error

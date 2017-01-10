@@ -133,8 +133,8 @@ angular.module('myApp').controller('registerController',
 //###############################################
 
 angular.module('myApp').controller('usersController',
-    ['$scope', '$http',
-        function ($scope, $http) {
+    ['$scope', '$http', 'AuthService',
+        function ($scope, $http, AuthService) {
 
            $scope.newUser = {};
            $scope.users = {};
@@ -177,6 +177,27 @@ angular.module('myApp').controller('usersController',
               });
             };
 
+            $scope.isLoggedInCookies = function () {
+
+                return AuthService.isLoggedInCookies();
+
+            };
+
+            $scope.isAdmin = function () {
+                return  'admin' == AuthService.getUserRole();
+
+            };
+
+            $scope.isBoss = function () {
+                return  'boss' == AuthService.getUserRole();
+
+            };
+
+            $scope.getUserInfo = function () {
+
+                return AuthService.isLoggedIn() ? AuthService.getUserInfo() : '';
+
+            }
 
 }]);
 
@@ -235,21 +256,21 @@ angular.module('myApp').controller('suggestController',
             var d_boss;
 
 
-            $scope.suggest = function () {
+            $scope.suggest = function (name, message) {
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
                     e_boss = data.data[0].e;
                     d_boss = data.data[0].d;
                     n_boss = data.data[0].n;
-                    AuthService.GetInfoOneUser('carol').then(function (data) {
+                    AuthService.GetInfoOneUser(name).then(function (data) {
 
                         var d_user = data.data[0].d;
                         var n_user = data.data[0].n;
 
                         var Key_signed_for_server = data.data[0].Key_signed_for_server;
 
-                    var message_encrypt = AuthService.encrypt($scope.suggestForm.message, e_boss, n_boss);
+                    var message_encrypt = AuthService.encrypt(message, e_boss, n_boss);
 
                     // ESTO HAY QUE QUITARLO SOLO ES PARA QUE SE VEA QUE SE DESCIFRA BIEN :)
 

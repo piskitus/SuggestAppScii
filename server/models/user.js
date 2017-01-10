@@ -11,7 +11,8 @@ var User = new Schema({
   d:        String,
   n:        String,
   Key_signed_for_server: String,
-  verify:   Boolean
+  verify:   Boolean,
+  role: {type: String, default: 'user'}
 });
 
 User.plugin(passportLocalMongoose);

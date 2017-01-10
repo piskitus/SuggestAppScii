@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/SuggestAppScii.iml" filepath="$PROJECT_DIR$/.idea/SuggestAppScii.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../suggest-app/.idea/suggest-app.iml" filepath="$PROJECT_DIR$/../suggest-app/.idea/suggest-app.iml" />
     </modules>
   </component>
 </project>

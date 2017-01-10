@@ -1,8 +1,8 @@
-<div class="jumbotron text-center">
+<div class="jumbotron text-center" ng-controller="usersController">
   <h1>Sugerencias</h1>
   <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
   <div ng-show="succes" class="alert alert-success">{{succesMessage}}</div>
-  <form class="form-horizontal" ng-submit="suggest()">
+  <form class="form-horizontal" ng-submit="suggest(getUserInfo(),suggestForm.message)">
     <div class="form-group">
       <label class="control-label col-sm-2" for="suggest">Sugerencia:</label>
       <div class="col-sm-10">
