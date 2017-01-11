@@ -6,12 +6,14 @@
                 <td>User</td>
                 <td>ID</td>
                 <td>Verificado?</td>
+                <td>Role</td>
                 <td>Verify/Delete</td>
             </tr>
             <tr ng-repeat="user in users">
                 <td>{{user.username}}</td>
                 <td>{{user._id}}</td>
                 <td>{{user.verify}}</td>
+                <td>{{user.role}}</td>
                 <td>
                 <button class="btn btn-success btn-sm"ng-click="verifyUser(user._id)"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                 <button class="btn btn-danger btn-sm" ng-click="deleteUser(user._id)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></td>

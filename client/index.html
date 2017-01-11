@@ -15,14 +15,15 @@
         <a class="navbar-brand">SuggestApp</a>
       </div>
       <ul class="nav navbar-nav">
-        <li><a href="#home"  data-clicktrack="true">Home</a></li>
+        <li><a href="#home"  ng-if='isLoggedInCookies()' data-clicktrack="true">Home</a></li>
         <li><a href="#users" ng-if='isLoggedInCookies() && isAdmin()' data-clicktrack="true">Users</a></li>
-        <li><a href="#suggest" ng-if='isLoggedInCookies()' data-clicktrack="true">Sugerencias</a></li>
-        <li><a href="#config" ng-if='isLoggedInCookies() && isBoss()' data-clicktrack="true">Config</a></li>
+        <li><a href="#suggest" ng-if='isLoggedInCookies() && !isAdmin() && !isBoss()' data-clicktrack="true">Sugerencias</a></li>
+        <li><a href="#config" ng-if='isLoggedInCookies() && isAdmin()' data-clicktrack="true">Config</a></li>
         <li><a href="#meeting" ng-if='isLoggedInCookies() && isBoss()' data-clicktrack="true">Meeting Room</a></li>
       </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a ng-controller="logoutController" ng-click='logout()'><span class="glyphicon glyphicon-off" aria-hidden="true"></span></a></li>
+          <li><a data-toggle="modal" data-target="#myModalLogOut" ng-show='isLoggedInCookies()' ng-controller="logoutController">{{getUserInfo()}}   <span class="glyphicon glyphicon-off" aria-hidden="true"></span></a></li>
+         <!-- <li><a ng-show='isLoggedInCookies()' ng-controller="logoutController" ng-click='logout()'>{{getUserInfo()}}   <span class="glyphicon glyphicon-off" aria-hidden="true"></span></a></li>-->
         </ul>
 
     </div>
@@ -33,6 +34,21 @@
 <div class="container">
   <br>
   <div ng-view></div>
+</div>
+
+<!-- Ventanaa emergente Modal logout-->
+<div class="modal fade" id="myModalLogOut" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <!-- Modal content-->
+    <div class="modal-content text-center">
+      <div class="modal-body">
+        <h2>Sure to log out?</h2>
+        <br>
+        <button type="submit" ng-controller="logoutController" ng-click="logout()" class="btn btn-success" data-dismiss="modal">Accept</button>
+        <button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- scripts -->

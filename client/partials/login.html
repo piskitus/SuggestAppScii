@@ -3,20 +3,20 @@
   <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
   <form class="form-horizontal" ng-submit="login()">
     <div class="form-group">
-      <label class="control-label col-sm-2" for="username">Username:</label>
-      <div class="col-sm-10">
+      <label class="control-label col-sm-4" for="username">Username:</label>
+      <div class="col-sm-5">
         <input type="text" class="form-control" id="username" placeholder="Enter username" ng-model="loginForm.username" required>
       </div>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-2" for="pwd">Password:</label>
-      <div class="col-sm-10">
+      <label class="control-label col-sm-4" for="pwd">Password:</label>
+      <div class="col-sm-5">
         <input type="password" class="form-control" id="pwd" placeholder="Enter password" ng-model="loginForm.password" required>
       </div>
     </div>
     <div class="form-group">
       <div>
-        <button type="submit" class="btn btn-success">Login</button>
+        <button type="submit" class="btn btn-success">&nbsp;Login&nbsp;</button>
       </div>
       <h4>Do not have an account? <a href="#register" data-clicktrack="true">Create one</a></h4>
     </div>
