@@ -144,7 +144,6 @@ angular.module('myApp').controller('usersController',
             //Pido a la API todos los usuarios
             $http.get('user/users').success(function(data){
                 $scope.users = data;
-                console.log(data);
             })
             .error(function(data){
                 console.log('Error: ' + data);
@@ -206,17 +205,19 @@ angular.module('myApp').controller('usersController',
 //###############################################
 
 angular.module('myApp').controller('meetingController',
-    ['$scope', '$http',
-        function ($scope, $http) {
+    ['$scope', '$http','AuthService',
+        function ($scope, $http, AuthService) {
 
-            $scope.newUser = {};
-            $scope.users = {};
+            $scope.newSuggest = '(Aquí aparecerán las sugerencias)';
+            $scope.suggets = {};
             $scope.selected = false;
+            var Arrayparts = [];
+           // $scope.configForm ={};
 
 
             //Pido a la API todos los suggests
-            $http.get('user/users').success(function(data){
-                $scope.users = data;
+            $http.get('user/suggests').success(function(data){
+                $scope.suggets = data;
                 console.log(data);
             })
                 .error(function(data){
@@ -237,13 +238,66 @@ angular.module('myApp').controller('meetingController',
                     });
             };
 
-            /* //Función para coger el Usuario y ponerlo en el input para editar o eliminar
-             $scope.selectUser=function(user){
-             $scope.newUser= user;
-             $scope.selected = true;
-             console.log($scope.newUser, $scope.selected);
-             };
-             */
+
+            $scope.desncryptSuggestions = function(id){
+
+                AuthService.GetInfoOneUser('Boss').then(function (data) {
+
+                    d_boss = data.data[0].d;
+                    n_boss = data.data[0].n;
+
+
+                    var privateKey = AuthService.mergePartsKey($scope.MakeArray());
+                    console.log("clave privada"+ privateKey);
+
+                    suggestBigInt = bigInt (id);
+
+                        var ui = suggestBigInt.modPow(privateKey, n_boss);
+
+                        var ui2 = ui.toString(16);
+
+                        var ui3c = AuthService.hex2a(ui2);
+
+                        console.log('Eso es el mensaje desencriptado a string : ' + ui3c);
+                                $scope.newSuggest = ui3c;
+                                $scope.succes = true;
+                                $scope.succesMessage = "Sugerencia desencriptada correctamente";
+                                $scope.disabled = false;
+                                $scope.suggestForm = {};
+                })
+
+                            // handle error
+                            .catch(function (err) {
+                            $scope.error = true;
+                            $scope.errorMessage = "Error al descencriptar las sugerencias";
+                            $scope.disabled = false;
+                            $scope.suggestForm = {};
+                        })
+
+            };
+
+            $scope.MakeArray = function () {
+
+                Arrayparts.push($scope.configForm);
+
+                console.log(Arrayparts);
+                return Arrayparts;
+
+            }
+
+
+
+            $scope.MergeKeys= function () {
+
+                var MergedKey = AuthService.mergePartsKey($scope.MakeArray());
+
+                console.log(MergedKey);
+
+                return MergedKey;
+
+            }
+
+
 
         }]);
 
@@ -264,6 +318,15 @@ angular.module('myApp').controller('suggestController',
                     d_boss = data.data[0].d;
                     n_boss = data.data[0].n;
                     AuthService.GetInfoOneUser(name).then(function (data) {
+                        if (data.data[0].verify == false)
+                        {
+                            console.log('Esto no esta verificado');
+                            $scope.error = true;
+                            $scope.errorMessage = "No estás verificado, contacta con el admin (admin@admin.com)";
+                            $scope.disabled = false;
+                            $scope.suggestForm = {};
+                            return
+                        }
 
                         var d_user = data.data[0].d;
                         var n_user = data.data[0].n;

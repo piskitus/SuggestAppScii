@@ -25,7 +25,8 @@ angular.module('myApp').factory('AuthService',
       GetInfoOneUser:GetInfoOneUser,
       isLoggedInCookies:isLoggedInCookies,
       getUserInfo:getUserInfo,
-      getUserRole:getUserRole
+      getUserRole:getUserRole,
+      mergePartsKey:mergePartsKey
     });
 
     function isLoggedIn() {
@@ -358,6 +359,16 @@ angular.module('myApp').factory('AuthService',
       return deferred.promise;
 
   }
+
+     function mergePartsKey(array){
+       i=0;
+
+      var keymerged = secrets.combine( [ array[0], array[1] ] );
+
+       console.log("keymeged en services"+keymerged);
+      return keymerged;
+
+    };
 
 
   }]);

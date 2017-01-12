@@ -41,7 +41,7 @@ router.get('/users', function (req, res) {
 });
 
 //################################################################
-//####    GET Boss e and n and d
+//####    GET user detail by name
 //################################################################
 
 router.get('/userdetail/:username', function(req, res){
@@ -112,7 +112,6 @@ router.get('/suggests', function (req, res) {
       }
   );
 });
-
 
 
 router.post('/register', function(req, res) {

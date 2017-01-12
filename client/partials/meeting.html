@@ -1,35 +1,35 @@
 <div class="jumbotron text-center">
     <h1>Meeting Room</h1>
-    <!--<div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>-->
+    <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
     <form class="form-horizontal" ng-submit="success()">
         <div class="form-group">
             <label class="control-label col-sm-2" for="clave">Añade claves (1a1):</label>
             <div class="col-sm-8">
-                <input type="number" class="form-control" id="clave" placeholder="Number" ng-model="configForm.clave" required>
-            </div>
+                <input type="text" class="form-control" id="clave" placeholder="Key parts" ng-model="configForm" required>
+                <!--<textarea type="text" rows="3" class="form-control" id="clave1" placeholder="Text" ng-model="configForm1" required></textarea>
+                <textarea type="text" rows="3" class="form-control" id="clave2" placeholder="Text" ng-model="configForm2" required></textarea>-->
+                </div>
             <div class="col-sm-1">
-                <button type="success" class="btn btn-success">Add</button>
+                <button type="success" ng-click="MakeArray()" class="btn btn-success">Add</button>
             </div>
 
         </div>
         <div class="form-group">
             <div>
-                <button type="success" class="btn btn-warning">Ver Sugerencias</button>
+                <button type="success"  class="btn btn-warning" ng-click="MergeKeys()">MergeKey</button>
             </div>
         </div>
 <br>
         <div>
             <table class="table table-striped">
                 <tr class="info">
-                    <td>User</td>
                     <td>ID</td>
-                    <td>Delete</td>
+                    <td>Suggestions</td>
                 </tr>
-                <tr ng-repeat="user in users">
-                    <td>{{user.username}}</td>
-                    <td>{{user._id}}</td>
-                    <td><button class="btn btn-danger btn-sm" ng-click="deleteUser(user._id)">x</button></td>
-
+                <tr ng-repeat="suggests in suggets">
+                    <td>{{suggests._id}}</td>
+                    <td><button class="btn btn-success btn-sm" ng-click="desncryptSuggestions(suggests.suggest)">Desencryp the suggestion</button></td>
+                    <textarea type="text" rows="5" class="form-control"  id="clave2" placeholder="Text" ng-model="newSuggest" required></textarea>
                 </tr>
             </table>
         </div>

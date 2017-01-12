@@ -5,7 +5,7 @@
   <form class="form-horizontal" ng-submit="suggest(getUserInfo(),suggestForm.message)">
     <div class="form-group">
       <div>
-        <textarea rows="5" class="form-control" id="suggest" ng-model="suggestForm.message"></textarea>
+        <textarea rows="5" maxlength="256" class="form-control" id="suggest" ng-model="suggestForm.message"></textarea>
       </div>
     </div>
         <div class="form-group">
