@@ -215,28 +215,7 @@ angular.module('myApp').controller('meetingController',
            // $scope.configForm ={};
 
 
-            //Pido a la API todos los suggests
-            $http.get('user/suggests').success(function(data){
-                $scope.suggets = data;
-                console.log(data);
-            })
-                .error(function(data){
-                    console.log('Error: ' + data);
-                });
-
-            //Eliminar un Usuario
-            $scope.deleteUser = function(id){
-                $http.delete('user/users/'+ id)
-                    .success(function(data){
-                        $scope.newUser={};
-                        $scope.users = data;
-                        $scope.selected=false;
-                        console.log(data);
-                    })
-                    .error(function(data){
-                        console.log('Error: ' + data);
-                    });
-            };
+///////////////////
 
 
             $scope.desncryptSuggestions = function(id){
@@ -291,7 +270,16 @@ angular.module('myApp').controller('meetingController',
 
                 var MergedKey = AuthService.mergePartsKey($scope.MakeArray());
 
-                console.log(MergedKey);
+                //Pido a la API todos los suggests
+                $http.get('user/suggests').success(function(data){
+                    $scope.suggets = data;
+                    console.log(data);
+                })
+                    .error(function(data){
+                        console.log('Error: ' + data);
+                    });
+
+                $scope.TablaSuggestON=true;
 
                 return MergedKey;
 
