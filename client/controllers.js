@@ -49,19 +49,12 @@ angular.module('myApp').controller('registerController',
     var n_server;
     var e_server;
 
-    $http.get('http://localhost:3000/user/keys').success(function (data) {
+    $scope.register = function () {
 
-      n_server = bigInt(data.n);
-      e_server = bigInt(data.e);
-      console.log('numero e', n_server);
+         AuthService.GetInfoOneUser('server').then(function (data) {
 
-    })
-        .error(function (data) {
-          console.log('Error: ' + data);
-        });
-
-     $scope.register = function () {
-
+             e_server = data.data[0].e;
+             n_server = data.data[0].n;
 
       var keys = AuthService.generateKeys(256);
       var e = keys.publicKey.e.toString();
@@ -69,27 +62,33 @@ angular.module('myApp').controller('registerController',
       var d = keys.privateKey.d.toString();
       var verify = false;
 
-      var d_bigInt  = keys.privateKey.d;
+      var e_bigInt  = keys.publicKey.e;
 
+       var publicKeyClient = e_bigInt ;
 
-
-       var publicKeyClient = d_bigInt ;
        console.log("esta es la e:"+ e_server);
 
        AuthService.Blind(publicKeyClient,e_server,n_server)
            .then(function(data) {
+
                var Key_signed_for_server = data;
 
-               console.log("esta es la d2:"+ d_bigInt );
-               console.log("esta es la key firmada por el server: "+ Key_signed_for_server);
+               console.log("esta es la e:"+ e_bigInt );
+               console.log(Key_signed_for_server);
 
-               Key_signed_for_server_String = Key_signed_for_server.toString();
+               var Key_signed_for_server_String = Key_signed_for_server.toString();
                // initial values
                $scope.error = false;
                $scope.disabled = true;
 
+               var cipher_e = CryptoJS.AES.encrypt(e, $scope.registerForm.password).toString()
+               var cipher_n = CryptoJS.AES.encrypt(n, $scope.registerForm.password).toString();
+               var cipher_d = CryptoJS.AES.encrypt(d, $scope.registerForm.password).toString();
+
+                var cipher_Key_signed_for_server_String = CryptoJS.AES.encrypt(Key_signed_for_server_String, $scope.registerForm.password).toString();
+
                // call register from service
-               AuthService.register($scope.registerForm.username, $scope.registerForm.password, e, n, d, Key_signed_for_server_String, verify)
+               AuthService.register($scope.registerForm.username, $scope.registerForm.password, cipher_e, cipher_n, cipher_d, cipher_Key_signed_for_server_String, verify)
                // handle success
                    .then(function () {
                        // SI EL REGISTRO SE EFECTUA CORRECTAMENTE, HAGO EL LOGIN DIRECTAMENTE
@@ -121,6 +120,10 @@ angular.module('myApp').controller('registerController',
            .catch(function(err) {
              // Tratar el error
          })
+         })
+             .catch(function (err) {
+                 // Tratar el error
+             })
 
 
 
@@ -222,14 +225,16 @@ angular.module('myApp').controller('meetingController',
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
-                    d_boss = data.data[0].d;
-                    n_boss = data.data[0].n;
+                    var d_boss_des = data.data[0].d;
+                    var n_boss_des= data.data[0].n;
 
+                    var d_boss  = CryptoJS.AES.decrypt(d_boss_des.toString(), 'boss').toString(CryptoJS.enc.Utf8);
+                    var n_boss  = CryptoJS.AES.decrypt(n_boss_des.toString(), 'boss').toString(CryptoJS.enc.Utf8);
 
                     var privateKey = AuthService.mergePartsKey($scope.MakeArray());
-                    console.log("clave privada"+ privateKey);
 
-                    suggestBigInt = bigInt (id);
+
+                    var suggestBigInt = bigInt (id);
 
                         var ui = suggestBigInt.modPow(privateKey, n_boss);
 
@@ -273,7 +278,6 @@ angular.module('myApp').controller('meetingController',
                 //Pido a la API todos los suggests
                 $http.get('user/suggests').success(function(data){
                     $scope.suggets = data;
-                    console.log(data);
                 })
                     .error(function(data){
                         console.log('Error: ' + data);
@@ -293,19 +297,21 @@ angular.module('myApp').controller('suggestController',
     ['$scope', '$location', 'AuthService',
         function ($scope, $location, AuthService) {
             // handle success
-            var n_boss;
-            var e_boss;
-            var d_boss;
+            var n_boss_des;
+            var e_boss_des;
 
 
             $scope.suggest = function (name, message) {
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
-                    e_boss = data.data[0].e;
-                    d_boss = data.data[0].d;
-                    n_boss = data.data[0].n;
+                   e_boss_des = data.data[0].e;
+                   n_boss_des = data.data[0].n;
+
+                    var e_boss  = CryptoJS.AES.decrypt(e_boss_des.toString(), 'boss').toString(CryptoJS.enc.Utf8);
+                    var n_boss  = CryptoJS.AES.decrypt(n_boss_des.toString(), 'boss').toString(CryptoJS.enc.Utf8);
                     AuthService.GetInfoOneUser(name).then(function (data) {
+
                         if (data.data[0].verify == false)
                         {
                             console.log('Esto no esta verificado');
@@ -316,26 +322,23 @@ angular.module('myApp').controller('suggestController',
                             return
                         }
 
-                        var d_user = data.data[0].d;
-                        var n_user = data.data[0].n;
 
-                        var Key_signed_for_server = data.data[0].Key_signed_for_server;
+                        var d_user_des = data.data[0].d;
+                        var n_user_des = data.data[0].n;
+                        var Key_signed_for_server_des = data.data[0].Key_signed_for_server;
 
-                    var message_encrypt = AuthService.encrypt(message, e_boss, n_boss);
+                        var d_user  = CryptoJS.AES.decrypt(d_user_des.toString(), AuthService.getUserPass()).toString(CryptoJS.enc.Utf8);
+                        var n_user  = CryptoJS.AES.decrypt(n_user_des.toString(), AuthService.getUserPass()).toString(CryptoJS.enc.Utf8);
+                        var Key_signed_for_server  = CryptoJS.AES.decrypt(Key_signed_for_server_des.toString(), AuthService.getUserPass()).toString(CryptoJS.enc.Utf8);
 
-                    // ESTO HAY QUE QUITARLO SOLO ES PARA QUE SE VEA QUE SE DESCIFRA BIEN :)
+                        console.log('estos sería la n_desencrypada'+ n_user);
 
-                    var ui = message_encrypt.modPow(d_boss, n_boss);
+                        var message_encrypt = AuthService.encrypt(message, e_boss, n_boss);
 
-                    var ui2 = ui.toString(16);
-
-                    var ui3c = AuthService.hex2a(ui2);
-
-                    console.log('Eso es el mensaje desencriptado a string : ' + ui3c);
-                        ///////////////
                         var HashToSend = bigInt(hash(message_encrypt,Key_signed_for_server));
 
                         var HashSigned = HashToSend.modPow(d_user, n_user);
+
 
                     AuthService.DoSuggest(message_encrypt.toString(), Key_signed_for_server, HashSigned.toString())
                     // handle success
@@ -369,7 +372,10 @@ angular.module('myApp').controller('suggestController',
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
-                var secretKey =data.data[0].d.toString(16);
+                    var e_boss_des =data.data[0].d.toString(16);
+
+                    var secretKey  = CryptoJS.AES.decrypt(e_boss_des, 'boss').toString(CryptoJS.enc.Utf8);
+
 
                 console.log('ESTA ES EN HEXA: '+ secretKey);
 
@@ -392,7 +398,9 @@ angular.module('myApp').controller('configController',
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
-                    var secretKey =data.data[0].d;
+                    var e_boss =data.data[0].d;
+
+                    var secretKey  = CryptoJS.AES.decrypt(e_boss.toString(), 'boss').toString(CryptoJS.enc.Utf8);
 
                     var sharedSecret = secrets.share(secretKey, $scope.configForm.nClave, $scope.configForm.nMin);
 

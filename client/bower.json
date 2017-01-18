@@ -11,6 +11,8 @@
     "angular-route": "1.4.7",
     "big-integer": "",
     "hash-string": "",
-    "secrets.js-grempe":""
+    "secrets.js-grempe":"",
+    "crypto-js":""
+
   }
 }

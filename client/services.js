@@ -26,7 +26,8 @@ angular.module('myApp').factory('AuthService',
       isLoggedInCookies:isLoggedInCookies,
       getUserInfo:getUserInfo,
       getUserRole:getUserRole,
-      mergePartsKey:mergePartsKey
+      mergePartsKey:mergePartsKey,
+      getUserPass:getUserPass
     });
 
     function isLoggedIn() {
@@ -45,6 +46,10 @@ angular.module('myApp').factory('AuthService',
 
     function getUserInfo() {
       return $cookies.getObject('user').username;
+    }
+
+    function getUserPass() {
+      return $cookies.getObject('password').password;
     }
 
     function getUserRole() {
@@ -87,7 +92,7 @@ angular.module('myApp').factory('AuthService',
             user = true;
             $cookies.put('logged', true);
             $cookies.putObject('user', {username:username});
-            console.log('LLEGA A QUI'+data.user.role);
+            $cookies.putObject('password', {password:password});
             $cookies.put('role', data.user.role);
             deferred.resolve();
           } else {
@@ -118,6 +123,7 @@ angular.module('myApp').factory('AuthService',
           user = false;
           $cookies.remove('logged');
           $cookies.remove('user');
+          $cookies.remove('password');
           $cookies.remove('role');
           deferred.resolve();
         })
@@ -211,13 +217,14 @@ angular.module('myApp').factory('AuthService',
 
       console.log('Esta es la clave publica del cliente:',Kpub_Cliente);
       console.log('eee', e_server);
-      console.log('nnnn', n_server);
 
-      var bigrandom = makePrime(n_server);
+      var n_serve = bigInt (n_server);
 
-      console.log('biginteger  ' +bigrandom);
+      var bigrandom = bigInt(makePrime(n_serve));
 
-      Kpub_Cliente_bigInt = Kpub_Cliente;
+      console.log(bigrandom);
+
+      var Kpub_Cliente_bigInt = Kpub_Cliente;
 
       console.log('Kpub_Cliente_bigInt', Kpub_Cliente_bigInt);
 
@@ -227,23 +234,21 @@ angular.module('myApp').factory('AuthService',
 
       $http.post('http://localhost:3000/user/message/blind', {"result" : result.toString(16)}).then(function(response) {
 
-        var keyCegadoFirmado = new bigInt (response.data.signed16,16);
+        var keyCegadoFirmado = bigInt (response.data.signed);
 
-        console.log('clave publica cegada y firmada'+keyCegadoFirmado);
+        var modinverso = bigrandom.modInv(n_serve);
 
-        console.log('n_server:' +n_server + 'bigrandom:  '+ bigrandom);
+        keyfirmado = (keyCegadoFirmado.multiply(modinverso)).mod(n_serve);
 
-        var modinverso = bigrandom.modInv(n_server);
+        console.log('Keyfirmado: ');
+        console.log(keyfirmado);
 
-        keyfirmado = (keyCegadoFirmado.multiply(modinverso)).mod(n_server);
-
-        console.log('MSG EN HEX: '+keyfirmado);
-
-        var verify = keyfirmado.modPow(e_server,n_server);
+        var verify = keyfirmado.modPow(e_server,n_serve);
 
         var verifytohex = verify;
 
-        console.log("mi key" +verifytohex);
+        console.log("mi key");
+        console.log(verifytohex);
 
         defered.resolve(keyfirmado);
 
@@ -268,14 +273,18 @@ angular.module('myApp').factory('AuthService',
 
     function makePrime(n_server) {
 
-      var prime;
+      var prime ;
+      var big0 = bigInt(0);
 
-      var num_prime = new bigInt.randBetween(0, n_server);
-      prime = num_prime.isPrime();
+      console.log(big0);
+      var num_prime = bigInt.randBetween(big0, n_server);
+      var isprime = num_prime;
+      prime = isprime.isPrime();
       while(prime == false)
       {
-        num_prime = new bigInt.randBetween(0, n_server);
-        prime = num_prime.isPrime();
+        num_prime = bigInt.randBetween(big0, n_server);
+        isprime = num_prime;
+        prime = isprime.isPrime();
       }
 
       return num_prime;
@@ -365,7 +374,6 @@ angular.module('myApp').factory('AuthService',
 
       var keymerged = secrets.combine( [ array[0], array[1] ] );
 
-       console.log("keymeged en services"+keymerged);
       return keymerged;
 
     };
