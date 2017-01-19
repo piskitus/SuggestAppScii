@@ -73,9 +73,6 @@ angular.module('myApp').controller('registerController',
 
                var Key_signed_for_server = data;
 
-               console.log("esta es la e:"+ e_bigInt );
-               console.log(Key_signed_for_server);
-
                var Key_signed_for_server_String = Key_signed_for_server.toString();
                // initial values
                $scope.error = false;
@@ -159,7 +156,6 @@ angular.module('myApp').controller('usersController',
                         $scope.newUser={};
                         $scope.users = data;
                         $scope.selected=false;
-                        console.log(data);
                     })
                     .error(function(data){
                         console.log('Error: ' + data);
@@ -172,7 +168,6 @@ angular.module('myApp').controller('usersController',
                   $scope.newUser = {};
                   $scope.users = data;
                   $scope.selected=false;
-                  console.log('Ok: ' + data);
               })
                   .error(function(data){
                       console.log('Error en verifyUser: ' + data);
@@ -215,21 +210,24 @@ angular.module('myApp').controller('meetingController',
             $scope.suggets = {};
             $scope.selected = false;
             var Arrayparts = [];
-           // $scope.configForm ={};
-
 
 
 ///////////////////
 
 
-            $scope.desncryptSuggestions = function(id){
+            $scope.desncryptSuggestions = function(id, Key, HashSigned){
+
+                var HashS = bigInt(hash(id,Key)).toString();
+
+                if(HashSigned == HashS){
+
+                    console.log('Esta verificado');
+
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
-                    var d_boss_des = data.data[0].d;
                     var n_boss_des= data.data[0].n;
 
-                    var d_boss  = CryptoJS.AES.decrypt(d_boss_des.toString(), 'boss').toString(CryptoJS.enc.Utf8);
                     var n_boss  = CryptoJS.AES.decrypt(n_boss_des.toString(), 'boss').toString(CryptoJS.enc.Utf8);
 
                     var privateKey = AuthService.mergePartsKey($scope.MakeArray());
@@ -243,7 +241,6 @@ angular.module('myApp').controller('meetingController',
 
                         var ui3c = AuthService.hex2a(ui2);
 
-                        console.log('Eso es el mensaje desencriptado a string : ' + ui3c);
                                 $scope.newSuggest = ui3c;
                                 $scope.succes = true;
                                 $scope.succesMessage = "Sugerencia desencriptada correctamente";
@@ -258,8 +255,18 @@ angular.module('myApp').controller('meetingController',
                             $scope.disabled = false;
                             $scope.suggestForm = {};
                         })
+                }
+                else{
+                    console.log('Este mensaje no esta verificado correctamente');
+                    $scope.error = true;
+                    $scope.errorMessage = "Esta sugerencia no está verificada, puede ser que no sean de un destino fiable";
+                    $scope.disabled = false;
+                    $scope.suggestForm = {};
+                    return
+                }
 
             };
+
 
             $scope.MakeArray = function () {
 
@@ -279,15 +286,15 @@ angular.module('myApp').controller('meetingController',
 
                 //Pido a la API todos los suggests
                 $http.get('user/suggests').success(function(data){
+
                     $scope.suggets = data;
+
                 })
                     .error(function(data){
                         console.log('Error: ' + data);
                     });
 
                 $scope.TablaSuggestON=true;
-
-                console.log('MergesKey: ' + MergedKey);
 
                 return MergedKey;
 
@@ -335,16 +342,15 @@ angular.module('myApp').controller('suggestController',
                         var n_user  = CryptoJS.AES.decrypt(n_user_des.toString(), AuthService.getUserPass()).toString(CryptoJS.enc.Utf8);
                         var Key_signed_for_server  = CryptoJS.AES.decrypt(Key_signed_for_server_des.toString(), AuthService.getUserPass()).toString(CryptoJS.enc.Utf8);
 
-                        console.log('estos sería la n_desencrypada'+ n_user);
 
                         var message_encrypt = AuthService.encrypt(message, e_boss, n_boss);
 
-                        var HashToSend = bigInt(hash(message_encrypt,Key_signed_for_server));
+                        var HashS = bigInt(hash(message_encrypt.toString(),Key_signed_for_server));
 
-                        var HashSigned = HashToSend.modPow(d_user, n_user);
+                        var Hash = HashS.modPow(d_user, n_user);
 
 
-                    AuthService.DoSuggest(message_encrypt.toString(), Key_signed_for_server, HashSigned.toString())
+                    AuthService.DoSuggest(message_encrypt.toString(), Key_signed_for_server, HashS.toString(), Hash.toString())
                     // handle success
                         .then(function () {
                             $scope.succes = true;
@@ -376,12 +382,10 @@ angular.module('myApp').controller('suggestController',
 
                 AuthService.GetInfoOneUser('Boss').then(function (data) {
 
-                    var e_boss_des =data.data[0].d.toString(16);
+                    var d_boss_des =data.data[0].d.toString(16);
 
-                    var secretKey  = CryptoJS.AES.decrypt(e_boss_des, 'boss').toString(CryptoJS.enc.Utf8);
+                    var secretKey  = CryptoJS.AES.decrypt(d_boss_des, 'boss').toString(CryptoJS.enc.Utf8);
 
-
-                console.log('ESTA ES EN HEXA: '+ secretKey);
 
             })
             .catch(function (err) {

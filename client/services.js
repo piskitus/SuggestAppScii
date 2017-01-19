@@ -215,22 +215,15 @@ angular.module('myApp').factory('AuthService',
 
       var defered = $q.defer();
 
-      console.log('Esta es la clave publica del cliente:',Kpub_Cliente);
-      console.log('eee', e_server);
-
       var n_serve = bigInt (n_server);
 
       var bigrandom = bigInt(makePrime(n_serve));
 
-      console.log(bigrandom);
-
       var Kpub_Cliente_bigInt = Kpub_Cliente;
-
-      console.log('Kpub_Cliente_bigInt', Kpub_Cliente_bigInt);
 
       var result = blindmessage(Kpub_Cliente_bigInt,bigrandom,e_server,n_server);
 
-      console.log('clave publica cegada', result);
+      console.log('Cegamos la clave y la enviamos al servidor'+ result);
 
       $http.post('http://localhost:3000/user/message/blind', {"result" : result.toString(16)}).then(function(response) {
 
@@ -242,13 +235,6 @@ angular.module('myApp').factory('AuthService',
 
         console.log('Keyfirmado: ');
         console.log(keyfirmado);
-
-        var verify = keyfirmado.modPow(e_server,n_serve);
-
-        var verifytohex = verify;
-
-        console.log("mi key");
-        console.log(verifytohex);
 
         defered.resolve(keyfirmado);
 
@@ -276,7 +262,6 @@ angular.module('myApp').factory('AuthService',
       var prime ;
       var big0 = bigInt(0);
 
-      console.log(big0);
       var num_prime = bigInt.randBetween(big0, n_server);
       var isprime = num_prime;
       prime = isprime.isPrime();
@@ -291,7 +276,7 @@ angular.module('myApp').factory('AuthService',
 
     }
 
-    function DoSuggest(suggest, Key_signed_for_server, HashSigned) {
+    function DoSuggest(suggest, Key_signed_for_server, HashSigned, Hash) {
 
       // create a new instance of deferred
       var deferred = $q.defer();
