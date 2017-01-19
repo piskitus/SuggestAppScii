@@ -218,6 +218,7 @@ angular.module('myApp').controller('meetingController',
            // $scope.configForm ={};
 
 
+
 ///////////////////
 
 
@@ -264,10 +265,11 @@ angular.module('myApp').controller('meetingController',
 
                 Arrayparts.push($scope.configForm);
 
-                console.log(Arrayparts);
+                console.log('Array parts: ' + Arrayparts);
+                $scope.configForm = ' ';
                 return Arrayparts;
 
-            }
+            };
 
 
 
@@ -284,6 +286,8 @@ angular.module('myApp').controller('meetingController',
                     });
 
                 $scope.TablaSuggestON=true;
+
+                console.log('MergesKey: ' + MergedKey);
 
                 return MergedKey;
 
@@ -404,7 +408,7 @@ angular.module('myApp').controller('configController',
 
                     var sharedSecret = secrets.share(secretKey, $scope.configForm.nClave, $scope.configForm.nMin);
 
-                    $scope.SplitsharedSecret =  sharedSecret
+                    $scope.SplitsharedSecret =  sharedSecret;
 
 
                 })
